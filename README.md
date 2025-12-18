@@ -76,11 +76,6 @@ The project followed a structured BI workflow:
 
 ## 7. Key KPIs
 
-- **Total Revenue:** $7.48M  
-- **Total Profit:** $2.19M  
-- **Total Cost:** $5.29M  
-- **Profit Margin:** 29.3%  
-
 All KPIs are dynamically filterable by month and location.
 
 ---
@@ -137,8 +132,6 @@ The dashboard enables decision-makers to move from descriptive reporting to acti
 ## 12. Repository Usage
 1. Download the `.pbix` file  
 2. Open it using Power BI Desktop
+3. Use slicers to filter by month and explore performance across dimensions  
 
 
-4. Use slicers to filter by month and explore performance across dimensions  
-
----
