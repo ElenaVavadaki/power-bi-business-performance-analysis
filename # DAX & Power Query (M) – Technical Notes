@@ -1,0 +1,58 @@
+This document outlines the key DAX measures, M Code and business logic used in the  
+**Business Performance & Revenue Analysis** Power BI dashboard for a Mexico-based toy retail company.
+
+DAX MEASURES:
+
+Total Units Sold =
+SUM ( 'public sales'[Units] )
+
+Revenue of Sale =
+'public sales'[Units] *
+RELATED ( 'public products'[Product_Price] )
+
+Cost of Sale =
+'public sales'[Units] *
+RELATED ( 'public products'[Product_Cost] )
+
+Profit of Sale =
+'public sales'[Revenue of Sale] -
+'public sales'[Cost of Sale]
+
+Total Revenue =
+SUM ( 'public sales'[Revenue of Sale] )
+
+Total Cost =
+SUM ( 'public sales'[Cost of Sale] )
+
+Total Profit =
+[Total Revenue] - [Total Cost]
+
+Profit Margin =
+DIVIDE ( [Total Profit], [Total Revenue] )
+
+Average Order Qty =
+AVERAGE ( 'public sales'[Units] )
+
+Average Profit per Sale =
+AVERAGE ( 'public sales'[Profit of Sale] )
+
+Average Cost per Sale =
+AVERAGE ( 'public sales'[Cost of Sale] )
+
+Average Revenue per Store =
+DIVIDE ( [Total Revenue],DISTINCTCOUNT ( 'public stores'[Store_ID] ))
+
+M Code:
+let
+    Source = PostgreSQL.Database("datasets.bigblue.academy:6432", "Mexico_Toy_Sales"),
+    public_calendar = Source{[Schema="public",Item="calendar"]}[Data],
+    #"Sorted Rows" = Table.Sort(public_calendar,{{"Date", Order.Descending}}),
+    #"Changed Type with Locale" = Table.TransformColumnTypes(#"Sorted Rows", {{"Date", type date}}, "en-US"),
+    #"Sorted Rows1" = Table.Sort(#"Changed Type with Locale",{{"Date", Order.Descending}}),
+    #"Filtered Rows" = Table.SelectRows(#"Sorted Rows1", each [Date] >= #date(2022, 1, 1) and [Date] <= #date(2023, 1, 1)),
+    #"Filtered Rows1" = Table.SelectRows(#"Filtered Rows", each ([Date] <> #date(2023, 1, 1))),
+    #"Added Custom" = Table.AddColumn(#"Filtered Rows1", "Custom", each [Date]),
+    #"Extracted Month" = Table.TransformColumns(#"Added Custom",{{"Custom", Date.Month, Int64.Type}}),
+    #"Renamed Columns" = Table.RenameColumns(#"Extracted Month",{{"Custom", "Month"}})
+in
+    #"Renamed Columns"
